@@ -24,6 +24,7 @@ class Crawler extends CrawlerBase
         $con=isset($conf["con"])?$conf["con"]:'all';
         $cached=isset($conf["cached"])?$conf["cached"]:false;
         $oid=OJModel::oid('poj');
+
         if(is_null($oid)) {
             throw new Exception("Online Judge Not Found");
         }

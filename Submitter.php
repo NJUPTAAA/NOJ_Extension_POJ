@@ -22,20 +22,30 @@ class Submitter extends Curl
         $this->selectedJudger=$judger_list[array_rand($judger_list)];
     }
 
-    private function pojLogin()
+    private function _login()
     {
-        $response=$this->grab_page('http://poj.org', 'poj', [], $this->selectedJudger["handle"]);
+        $response=$this->grab_page([
+            "site"=>'http://poj.org',
+            "oj"=>'poj',
+            "handle"=>$this->selectedJudger["handle"]
+        ]);
         if (strpos($response, 'Log Out')===false) {
             $params=[
                 'user_id1' => $this->selectedJudger["handle"],
                 'password1' => $this->selectedJudger["password"],
                 'B1' => 'login',
             ];
-            $this->login('http://poj.org/login', http_build_query($params), 'poj', true, $this->selectedJudger["handle"]);
+            $this->login([
+                "url"=>'http://poj.org/login',
+                "data"=>http_build_query($params),
+                "oj"=>'poj',
+                "ret"=>true,
+                "handle"=>$this->selectedJudger["handle"]
+            ]);
         }
     }
 
-    private function pojSubmit()
+    private function _submit()
     {
         $params=[
             'problem_id' => $this->post_data['iid'],
@@ -44,7 +54,17 @@ class Submitter extends Curl
             'encoded' => 1, // Optional, but sometimes base64 seems smaller than url encode
         ];
 
-        $response=$this->post_data("http://poj.org/submit", http_build_query($params), "poj", true, false, true, false, [], $this->selectedJudger["handle"]);
+        $response=$this->post_data([
+            "site"=>"http://poj.org/submit",
+            "data"=>http_build_query($params),
+            "oj"=>"poj",
+            "ret"=>true,
+            "follow"=>false,
+            "returnHeader"=>true,
+            "postJson"=>false,
+            "extraHeaders"=>[],
+            "handle"=>$this->selectedJudger["handle"]
+        ]);
 
         if (!preg_match('/Location: .*\/status/', $response, $match)) {
             $this->sub['verdict']='Submission Error';
@@ -72,7 +92,7 @@ class Submitter extends Curl
             return;
         }
 
-        $this->pojLogin();
-        $this->pojSubmit();
+        $this->_login();
+        $this->_submit();
     }
 }

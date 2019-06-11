@@ -21,6 +21,8 @@ class Judger extends Curl
         'Compile Error'=>"Compile Error",
     ];
     private $MODEL;
+    private $poj=[];
+
 
     public function __construct()
     {
@@ -30,15 +32,18 @@ class Judger extends Curl
     public function judge($row)
     {
         $sub=[];
-        if (!isset($poj[$row['remote_id']])) {
+
+        if (!isset($this->poj[$row['remote_id']])) {
             $judgerDetail=$judger->detail($row['jid']);
-            $this->appendPOJStatus($poj, $judgerDetail['handle'], $row['remote_id']);
-            if (!isset($poj[$row['remote_id']])) {
+            $this->appendPOJStatus($judgerDetail['handle'], $row['remote_id']);
+            if (!isset($this->poj[$row['remote_id']])) {
                 return;
             }
         }
-        $status=$poj[$row['remote_id']];
+
+        $status=$this->poj[$row['remote_id']];
         $sub['verdict']=$verdict[$status['verdict']];
+
         if ($sub['verdict']=='Compile Error') {
             try {
                 $res=Requests::get('http://poj.org/showcompileinfo?solution_id='.$row['remote_id']);
@@ -47,15 +52,28 @@ class Judger extends Curl
             } catch (Exception $e) {
             }
         }
+
         $sub["score"]=$sub['verdict']=="Accepted" ? 1 : 0;
         $sub['time']=$status['time'];
         $sub['memory']=$status['memory'];
         $sub['remote_id']=$row['remote_id'];
 
-        // $ret[$row['sid']]=[
-        //     "verdict"=>$sub['verdict']
-        // ];
-
         $this->MODEL->updateSubmission($row['sid'], $sub);
+    }
+
+    private function appendPOJStatus($judger, $first=null)
+    {
+        if ($first!==null) {
+            $first++;
+        }
+        $res=Requests::get("http://poj.org/status?user_id={$judger}&top={$first}");
+        $rows=preg_match_all('/<tr align=center><td>(\d+)<\/td><td>.*?<\/td><td>.*?<\/td><td>.*?<font color=.*?>(.*?)<\/font>.*?<\/td><td>(\d*)K?<\/td><td>(\d*)(?:MS)?<\/td>/', $res->body, $matches);
+        for ($i=0; $i<$rows; $i++) {
+            $this->poj[$matches[1][$i]]=[
+                'verdict'=>$matches[2][$i],
+                'memory'=>$matches[3][$i] ? $matches[3][$i] : 0,
+                'time'=>$matches[4][$i] ? $matches[4][$i] : 0,
+            ];
+        }
     }
 }
