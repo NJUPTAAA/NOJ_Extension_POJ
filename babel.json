@@ -1,0 +1,17 @@
+{
+    "name":"POJ",
+    "code":"poj",
+    "type":"virtual-judge",
+    "description": "POJ Interface for NOJ",
+    "license": "MIT",
+    "repository":"https://github.com/ZsgsDesign/POJ",
+    "version":"0.1.0",
+    "provider":{
+        "judger":"Judger",
+        "crawler":"Crawler",
+        "submitter":"Submitter"
+    },
+    "require":{
+        "NOJ":"0.3.0"
+    }
+}
