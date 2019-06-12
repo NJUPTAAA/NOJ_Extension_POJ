@@ -1,7 +1,7 @@
 <?php
 namespace App\Babel\Extension\poj;
 
-use App\Babel\Crawler\CrawlerBase;
+use App\Babel\Crawl\CrawlerBase;
 use App\Models\ProblemModel;
 use App\Models\OJModel;
 use KubAT\PhpSimple\HtmlDomParser;
