@@ -10,7 +10,7 @@ use Exception;
 
 class Crawler extends CrawlerBase
 {
-    public $oid=4;
+    public $oid=null;
     private $con;
     private $imgi;
     /**
@@ -23,9 +23,9 @@ class Crawler extends CrawlerBase
         $action=isset($conf["action"])?$conf["action"]:'crawl_problem';
         $con=isset($conf["con"])?$conf["con"]:'all';
         $cached=isset($conf["cached"])?$conf["cached"]:false;
-        $oid=OJModel::oid('poj');
+        $this->oid=OJModel::oid('poj');
 
-        if(is_null($oid)) {
+        if(is_null($this->oid)) {
             throw new Exception("Online Judge Not Found");
         }
 
