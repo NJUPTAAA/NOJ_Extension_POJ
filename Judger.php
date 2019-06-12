@@ -3,6 +3,7 @@ namespace App\Babel\Extension\poj;
 
 use App\Babel\Submit\Curl;
 use App\Models\SubmissionModel;
+use App\Models\JudgerModel;
 use Requests;
 use Exception;
 use Log;
@@ -20,13 +21,14 @@ class Judger extends Curl
         'Output Limit Exceeded'=>"Output Limit Exceeded",
         'Compile Error'=>"Compile Error",
     ];
-    private $MODEL;
+    private $model=[];
     private $poj=[];
 
 
     public function __construct()
     {
-        $this->MODEL=new SubmissionModel();
+        $this->model["submissionModel"]=new SubmissionModel();
+        $this->model["judgerModel"]=new JudgerModel();
     }
 
     public function judge($row)
@@ -34,7 +36,7 @@ class Judger extends Curl
         $sub=[];
 
         if (!isset($this->poj[$row['remote_id']])) {
-            $judgerDetail=$judger->detail($row['jid']);
+            $judgerDetail=$this->model["judgerModel"]->detail($row['jid']);
             $this->appendPOJStatus($judgerDetail['handle'], $row['remote_id']);
             if (!isset($this->poj[$row['remote_id']])) {
                 return;
@@ -42,7 +44,7 @@ class Judger extends Curl
         }
 
         $status=$this->poj[$row['remote_id']];
-        $sub['verdict']=$verdict[$status['verdict']];
+        $sub['verdict']=$this->verdict[$status['verdict']];
 
         if ($sub['verdict']=='Compile Error') {
             try {
@@ -58,7 +60,7 @@ class Judger extends Curl
         $sub['memory']=$status['memory'];
         $sub['remote_id']=$row['remote_id'];
 
-        $this->MODEL->updateSubmission($row['sid'], $sub);
+        $this->model["submissionModel"]->updateSubmission($row['sid'], $sub);
     }
 
     private function appendPOJStatus($judger, $first=null)

@@ -11,6 +11,7 @@ use Exception;
 class Crawler extends CrawlerBase
 {
     public $oid=null;
+    public $prefix="POJ";
     private $con;
     private $imgi;
     /**
@@ -110,15 +111,15 @@ class Crawler extends CrawlerBase
             header('HTTP/1.1 404 Not Found');
             die();
         }
-        $this->pro['pcode']='POJ'.$con;
+        $this->pro['pcode']=$this->prefix.$con;
         $this->pro['OJ']=$this->oid;
         $this->pro['contest_id']=null;
         $this->pro['index_id']=$con;
         $this->pro['origin']="http://poj.org/problem?id={$con}&lang=zh-CN&change=true";
-        $this->pro['title']=POJ::find('/<div class="ptt" lang=".*?">([\s\S]*?)<\/div>/', $res->body);
-        $this->pro['time_limit']=POJ::find('/Time Limit:.*?(\d+)MS/', $res->body);
-        $this->pro['memory_limit']=POJ::find('/Memory Limit:.*?(\d+)K/', $res->body);
-        $this->pro['solved_count']=POJ::find('/Accepted:.*?(\d+)/', $res->body);
+        $this->pro['title']=self::find('/<div class="ptt" lang=".*?">([\s\S]*?)<\/div>/', $res->body);
+        $this->pro['time_limit']=self::find('/Time Limit:.*?(\d+)MS/', $res->body);
+        $this->pro['memory_limit']=self::find('/Memory Limit:.*?(\d+)K/', $res->body);
+        $this->pro['solved_count']=self::find('/Accepted:.*?(\d+)/', $res->body);
         $this->pro['input_type']='standard input';
         $this->pro['output_type']='standard output';
         $descPattern='<p class="pst">Description</p>';
@@ -165,9 +166,9 @@ class Crawler extends CrawlerBase
 
         if ($problem) {
             $problemModel->clearTags($problem);
-            $new_pid=$this->update_problem($this->oid);
+            $new_pid=$this->updateProblem($this->oid);
         } else {
-            $new_pid=$this->insert_problem($this->oid);
+            $new_pid=$this->insertProblem($this->oid);
         }
 
         // $problemModel->addTags($new_pid, $tag); // not present
