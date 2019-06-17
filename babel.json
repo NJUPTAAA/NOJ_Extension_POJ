@@ -12,6 +12,6 @@
         "submitter":"Submitter"
     },
     "require":{
-        "NOJ":"0.3.0"
+        "NOJ":"^0.3.0"
     }
 }
