@@ -2,13 +2,14 @@
 namespace App\Babel\Extension\poj;
 
 use App\Babel\Submit\Curl;
-use App\Models\CompilerModel;
+use App\Models\OJModel;
 use App\Models\JudgerModel;
 use Illuminate\Support\Facades\Validator;
 use Requests;
 
 class Submitter extends Curl
 {
+    public $oid=null;
     protected $sub;
     public $post_data=[];
     protected $selectedJudger;
@@ -18,7 +19,8 @@ class Submitter extends Curl
         $this->sub=& $sub;
         $this->post_data=$all_data;
         $judger=new JudgerModel();
-        $judger_list=$judger->list(4);
+        $this->oid=OJModel::oid('poj');
+        $judger_list=$judger->list($this->oid);
         $this->selectedJudger=$judger_list[array_rand($judger_list)];
     }
 
