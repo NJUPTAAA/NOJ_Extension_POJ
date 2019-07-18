@@ -103,6 +103,10 @@ class Crawler extends CrawlerBase
     {
         if($con=='all'){
             $lastProbID=4054;
+            $POJVolume=HtmlDomParser::str_get_html("<center><font size=5>Volume</font>".explode("<font size=5>Volume</font>",Requests::get('http://poj.org/problemlist', ['Referer' => 'http://poj.org'])->body)[1], true, true, DEFAULT_TARGET_CHARSET, false);
+            $lastVolume = $POJVolume->find('center')[0]->last_child()->plaintext;
+            $POJVolumePage=HtmlDomParser::str_get_html(Requests::get("http://poj.org/problemlist?volume=$lastVolume", ['Referer' => 'http://poj.org'])->body, true, true, DEFAULT_TARGET_CHARSET, false);
+            $lastProbID=intval($POJVolumePage->find("tr[align='center']", -1)->find("td", 0)->plaintext);
             foreach (range(1000, $lastProbID) as $probID) {
                 $this->_crawl($probID, 5);
             }
