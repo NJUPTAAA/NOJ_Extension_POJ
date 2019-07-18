@@ -102,11 +102,25 @@ class Crawler extends CrawlerBase
         if($con=='all'){
 
         }else{
-            $this->_crawl($con);
+            $this->_crawl($con, 5);
         }
     }
 
-    public function _crawl($con)
+    protected function _crawl($con, $retry=1)
+    {
+        $attempts=1;
+        while($attempts <= $retry){
+            try{
+                $this->__crawl($con);
+            }catch(Exception $e){
+                $attempts++;
+                continue;
+            }
+            break;
+        }
+    }
+
+    protected function __crawl($con)
     {
         $this->_resetPro();
         $this->imgi=1;
@@ -115,7 +129,7 @@ class Crawler extends CrawlerBase
         $res=Requests::get("http://poj.org/problem?id={$con}&lang=zh-CN&change=true"); // I have no idea what does `change` refers to
         if (strpos($res->body, 'Can not find problem')!==false) {
             $this->line("\n  <bg=red;fg=white> Exception </> : <fg=yellow>Can not find problem.</>\n");
-            return;
+            throw new Exception("Can not find problem");
         }
         $this->pro['pcode']=$this->prefix.$con;
         $this->pro['OJ']=$this->oid;
