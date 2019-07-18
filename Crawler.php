@@ -103,7 +103,7 @@ class Crawler extends CrawlerBase
     {
         if($con=='all'){
             $lastProbID=4054;
-            foreach (range(1, $lastProbID) as $probID) {
+            foreach (range(1000, $lastProbID) as $probID) {
                 $this->_crawl($probID, 5);
             }
         }else{
