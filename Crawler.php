@@ -13,6 +13,8 @@ class Crawler extends CrawlerBase
     public $oid=null;
     public $prefix="POJ";
     private $con;
+    private $action;
+    private $cached;
     private $imgi;
     /**
      * Initial
@@ -21,16 +23,16 @@ class Crawler extends CrawlerBase
      */
     public function start($conf)
     {
-        $action=isset($conf["action"])?$conf["action"]:'crawl_problem';
+        $this->action=isset($conf["action"])?$conf["action"]:'crawl_problem';
+        $this->cached=isset($conf["cached"])?$conf["cached"]:false;
         $con=isset($conf["con"])?$conf["con"]:'all';
-        $cached=isset($conf["cached"])?$conf["cached"]:false;
         $this->oid=OJModel::oid('poj');
 
         if(is_null($this->oid)) {
             throw new Exception("Online Judge Not Found");
         }
 
-        if ($action=='judge_level') {
+        if ($this->action=='judge_level') {
             $this->judge_level();
         } else {
             $this->crawl($con);
@@ -100,7 +102,10 @@ class Crawler extends CrawlerBase
     public function crawl($con)
     {
         if($con=='all'){
-
+            $lastProbID=4054;
+            foreach (range(1, $lastProbID) as $probID) {
+                $this->_crawl($probID, 5);
+            }
         }else{
             $this->_crawl($con, 5);
         }
@@ -124,8 +129,12 @@ class Crawler extends CrawlerBase
     {
         $this->_resetPro();
         $this->imgi=1;
+        $this->con=$con;
         $this->line("<fg=yellow>Crawling:   </>$con");
         $problemModel=new ProblemModel();
+        if(!empty($problemModel->basic($this->prefix.$con)) && $this->action=="update_problem"){
+            return;
+        }
         $res=Requests::get("http://poj.org/problem?id={$con}&lang=zh-CN&change=true"); // I have no idea what does `change` refers to
         if (strpos($res->body, 'Can not find problem')!==false) {
             $this->line("\n  <bg=red;fg=white> Exception </> : <fg=yellow>Can not find problem.</>\n");
