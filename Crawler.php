@@ -100,17 +100,23 @@ class Crawler extends CrawlerBase
 
     public function crawl($con)
     {
-        if ($con=='all') {
-            // TODO
-            return;
+        if($con=='all'){
+            
+        }else{
+            $this->_crawl($con);
         }
-        $this->con=$con;
+    }
+
+    public function _crawl($con)
+    {
+        $this->_resetPro();
         $this->imgi=1;
+        $this->line("<fg=yellow>Crawling:   </>$con");
         $problemModel=new ProblemModel();
         $res=Requests::get("http://poj.org/problem?id={$con}&lang=zh-CN&change=true"); // I have no idea what does `change` refers to
         if (strpos($res->body, 'Can not find problem')!==false) {
-            header('HTTP/1.1 404 Not Found');
-            die();
+            $this->line("\n  <bg=red;fg=white> Exception </> : <fg=yellow>Can not find problem.</>\n");
+            return;
         }
         $this->pro['pcode']=$this->prefix.$con;
         $this->pro['OJ']=$this->oid;
@@ -172,6 +178,6 @@ class Crawler extends CrawlerBase
             $new_pid=$this->insertProblem($this->oid);
         }
 
-        // $problemModel->addTags($new_pid, $tag); // not present
+        $this->line("<fg=green>Crawled:    </>$con");
     }
 }
