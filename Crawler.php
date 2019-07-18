@@ -131,7 +131,7 @@ class Crawler extends CrawlerBase
         $this->imgi=1;
         $this->con=$con;
         $problemModel=new ProblemModel();
-        if(!empty($problemModel->basic($problemModel->oid($this->prefix.$con))) && $this->action=="update_problem"){
+        if(!empty($problemModel->basic($problemModel->pid($this->prefix.$con))) && $this->action=="update_problem"){
             return;
         }
         if($this->action=="crawl_problem") $this->line("<fg=yellow>Crawling:   </>{$this->prefix}{$con}");
