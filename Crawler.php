@@ -130,11 +130,13 @@ class Crawler extends CrawlerBase
         $this->_resetPro();
         $this->imgi=1;
         $this->con=$con;
-        $this->line("<fg=yellow>Crawling:   </>$con");
         $problemModel=new ProblemModel();
         if(!empty($problemModel->basic($this->prefix.$con)) && $this->action=="update_problem"){
             return;
         }
+        if($this->action=="crawl_problem") $this->line("<fg=yellow>Crawling:   </>{$this->prefix}{$con}");
+        elseif($this->action=="update_problem") $this->line("<fg=yellow>Updating:   </>{$this->prefix}{$con}");
+        else return;
         $res=Requests::get("http://poj.org/problem?id={$con}&lang=zh-CN&change=true"); // I have no idea what does `change` refers to
         if (strpos($res->body, 'Can not find problem')!==false) {
             $this->line("\n  <bg=red;fg=white> Exception </> : <fg=yellow>Can not find problem.</>\n");
@@ -200,6 +202,7 @@ class Crawler extends CrawlerBase
             $new_pid=$this->insertProblem($this->oid);
         }
 
-        $this->line("<fg=green>Crawled:    </>$con");
+        if($this->action=="crawl_problem") $this->line("<fg=green>Crawled:    </>{$this->prefix}{$con}");
+        elseif($this->action=="update_problem") $this->line("<fg=yellow>Updated:    </>{$this->prefix}{$con}");
     }
 }
