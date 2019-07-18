@@ -19,12 +19,11 @@ class Crawler extends CrawlerBase
      *
      * @return Response
      */
-    public function __construct($conf, $commandLineObject=null)
+    public function __construct($conf)
     {
         $action=isset($conf["action"])?$conf["action"]:'crawl_problem';
         $con=isset($conf["con"])?$conf["con"]:'all';
         $cached=isset($conf["cached"])?$conf["cached"]:false;
-        $this->importCommandLine($commandLineObject);
         $this->oid=OJModel::oid('poj');
 
         if(is_null($this->oid)) {
@@ -101,7 +100,7 @@ class Crawler extends CrawlerBase
     public function crawl($con)
     {
         if($con=='all'){
-            
+
         }else{
             $this->_crawl($con);
         }
