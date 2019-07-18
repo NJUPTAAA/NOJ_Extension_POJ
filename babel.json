@@ -1,6 +1,7 @@
 {
     "name":"POJ",
     "code":"poj",
+    "icon":"resources/poj@2x.png",
     "type":"virtual-judge",
     "description": "POJ Interface for NOJ",
     "license": "MIT",
