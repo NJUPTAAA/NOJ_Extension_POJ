@@ -49,6 +49,8 @@ class Submitter extends Curl
 
     private function _submit()
     {
+        $this->sub["jid"]=$this->selectedJudger["jid"];
+
         $params=[
             'problem_id' => $this->post_data['iid'],
             'language' => $this->post_data['lang'],
