@@ -20,6 +20,7 @@ class Judger extends Curl
         'Runtime Error'=>"Runtime Error",
         'Output Limit Exceeded'=>"Output Limit Exceeded",
         'Compile Error'=>"Compile Error",
+        'System Error'=>"System Error",
     ];
     private $model=[];
     private $poj=[];
@@ -44,6 +45,11 @@ class Judger extends Curl
         }
 
         $status=$this->poj[$row['remote_id']];
+
+        if(!isset($this->verdict[$status['verdict']])) {
+            return ;
+        }
+        
         $sub['verdict']=$this->verdict[$status['verdict']];
 
         if ($sub['verdict']=='Compile Error') {
