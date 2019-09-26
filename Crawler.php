@@ -123,6 +123,7 @@ class Crawler extends CrawlerBase
                 $this->__crawl($con);
             }catch(Exception $e){
                 $attempts++;
+                $this->line("\n  <bg=red;fg=white> Exception </> : <fg=yellow>{$e->getMessage()} at {$e->getFile()}:{$e->getLine()}</>\n");
                 continue;
             }
             break;
