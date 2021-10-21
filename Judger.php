@@ -54,7 +54,9 @@ class Judger extends Curl
 
         if ($sub['verdict']=='Compile Error') {
             try {
-                $res=Requests::get('http://poj.org/showcompileinfo?solution_id='.$row['remote_id']);
+                $res=Requests::get('http://poj.org/showcompileinfo?solution_id='.$row['remote_id'], [], [
+                    'timeout' => 30
+                ]);
                 preg_match('/<pre>([\s\S]*)<\/pre>/', $res->body, $match);
                 $sub['compile_info']=html_entity_decode($match[1], ENT_QUOTES);
             } catch (Exception $e) {
@@ -74,7 +76,9 @@ class Judger extends Curl
         if ($first!==null) {
             $first++;
         }
-        $res=Requests::get("http://poj.org/status?user_id={$judger}&top={$first}");
+        $res=Requests::get("http://poj.org/status?user_id={$judger}&top={$first}", [], [
+            'timeout' => 30
+        ]);
         $rows=preg_match_all('/<tr align=center><td>(\d+)<\/td><td>.*?<\/td><td>.*?<\/td><td>.*?<font color=.*?>(.*?)<\/font>.*?<\/td><td>(\d*)K?<\/td><td>(\d*)(?:MS)?<\/td>/', $res->body, $matches);
         for ($i=0; $i<$rows; $i++) {
             $this->poj[$matches[1][$i]]=[
